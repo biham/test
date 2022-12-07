@@ -32,7 +32,7 @@
                     <div class="card-header text-center">Pembimbing</div>
                     <div class="card-body">
                         <p class="card-text">
-                        <h5>
+                        <h5 class="text-center">
                             <?= $dospem; ?>
                         </h5>
                         </p>
@@ -46,8 +46,8 @@
                     <div class="card-header text-center">Jumlah Bimbingan</div>
                     <div class="card-body">
                         <p class="card-text">
-                        <h5>
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis sed quia sequi harum ut dolores cum nulla qui itaque recusandae, in at iusto deleniti voluptatum, quaerat quae saepe nihil distinctio?
+                        <h5 class="text-center">
+                            <?= $jml; ?>
                         </h5>
                         </p>
                     </div>

@@ -3,9 +3,9 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Models\proposalModel;
-use App\Models\BImbinganModel;
-use App\models\DetailbimbinganModel;
+use App\Models\ProposalModel;
+use App\Models\BimbinganModel;
+use App\models\DetailBimbinganModel;
 use Hermawan\DataTables\DataTable;
 
 
@@ -19,7 +19,7 @@ class Bimbingan extends BaseController
 
         $data = [
             'title' => 'Bimbingan',
-            'cek' => $this->proposalModel->accproposal($id1)
+            'cek' => $this->ProposalModel->accproposal($id1)
         ];
         if ($id2 == 2) {
             return view('bimbingan/index_m', $data);
@@ -56,13 +56,13 @@ class Bimbingan extends BaseController
     public function getdata_m()
     {
         $id = session('idlogin');
-        $builder = $this->db->table('bimbingan')
-            ->select('bimbingan.id, id_mahasiswa, proposal.id_dosen, materi, bimbingan.files, files_2, bimbingan.ket, ket_2, bimbingan.status')
+        $builder = $this->db->table('detail_bimbingan')
+            ->select('detail_bimbingan.id, materi, files, files_2, ket, ket_2, detail_bimbingan.status')
             ->where('id_mahasiswa', $id)
-            ->join('proposal', 'proposal.id_judul= bimbingan.id_judul')
-            ->join('mahasiswa', 'mahasiswa.id=proposal.id_mahasiswa',)
-            ->join('dosen', 'dosen.id=proposal.id_dosen',)
-            ->join('prodi', 'prodi.prodiid = mahasiswa.mhsprodiid');
+            ->join('bimbingan', 'bimbingan.id= detail_bimbingan.id_bimbingan')
+            ->join('mahasiswa', 'mahasiswa.id=bimbingan.id_mahasiswa',);
+        // ->join('dosen', 'dosen.id=proposal.id_dosen',)
+        // ->join('prodi', 'prodi.prodiid = mahasiswa.mhsprodiid');
 
 
 
@@ -98,7 +98,7 @@ class Bimbingan extends BaseController
             // $proposal = new proposalModel;
             // $proposaldata = $proposal->proposal($id);
             $id = $this->request->getVar('id');
-            $bimbingan = $this->BImbinganModel->get($id);
+            $bimbingan = $this->DetailBimbinganModel->get($id);
             $file = $this->request->getFile('files');
             // $file_name = $proposaldata['npm'] . '_' . $proposaldata['nama_mhs'] . '_' . $file->getRandomName();
             $file_name = $bimbingan['files'];
@@ -108,7 +108,7 @@ class Bimbingan extends BaseController
 
             unlink('assets/bimbingan/' . $file_name);
 
-            $this->BImbinganModel->delete($id);
+            $this->DetailBimbinganModel->delete($id);
             $msg = [
                 'sukses' => "berhasil dihapus"
             ];
@@ -124,7 +124,6 @@ class Bimbingan extends BaseController
             $id = $this->session->get('idlogin');
             $data1 = $builder->getWhere(['id' => $id])->getRowArray();
             $data = $proposal->accproposal($id);
-
 
             $validation = \config\Services::validation();
 
@@ -183,7 +182,7 @@ class Bimbingan extends BaseController
                     'status' => '0',
                 ];
 
-                $mhs = new BImbinganModel();
+                $mhs = new DetailBimbinganModel();
                 $mhs->insert($simpandata);
 
                 $msg = [
@@ -202,9 +201,9 @@ class Bimbingan extends BaseController
         if ($this->request->isAJAX()) {
 
             $id = $this->request->getVar('id');
-            $bimbingan = new BImbinganModel();
+            $bimbingan = new BimbinganModel();
             $data = [
-                'bimbingan' => $this->BImbinganModel->find($id),
+                'bimbingan' => $this->DetailBimbinganModel->find($id),
                 'dosen' => $this->dsn->findAll(),
                 'mahasiswa' => $this->mhs->findAll(),
             ];
@@ -225,7 +224,7 @@ class Bimbingan extends BaseController
             // if ($fotolama != NULL || $fotolama != "") {
             //     unlink($fotolama);
             // }
-            $data = $this->BImbinganModel->find($id);
+            $data = $this->DetailBimbinganModel->find($id);
             $file = $this->request->getFile('files_2');
             if ($file->getError() == 4) {
                 $files_lama = $data['files_2'];
@@ -253,7 +252,7 @@ class Bimbingan extends BaseController
                 ];
             }
 
-            $mhs = new BImbinganModel();
+            $mhs = new DetailBimbinganModel();
             $mhs->update($id, $updatedata);
 
             $msg = [

@@ -35,7 +35,7 @@ $session = \config\Services::session();
     <!-- Required font awesome -->
     <link href="<?= base_url() ?>/assets/plugins/font-awesome/css/font-awesome" rel="stylesheet" type="text/css" />
     <link href="<?= base_url() ?>/assets/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="<?= base_url() ?>/assets/plugins/font-awesome/scss/font-awesome.scss" rel="stylesheet" type="text/css" />
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>

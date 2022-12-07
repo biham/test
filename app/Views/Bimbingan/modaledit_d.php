@@ -40,9 +40,9 @@
                         <label for="" class="col-sm-2 col-form-label">Materi</label>
                         <div class="col-sm-10">
                             <select name="status" id="" class="form-control">
-                                <option value="">--Pilih--</option>
-                                <option value="1">Valid</option>
-                                <option value="2">Tidak valid</option>
+                                <option value="0" <?php if ($bimbingan['status'] == '0') echo "selected"; ?>>Menunggu Konfrimasi</option>
+                                <option value="1" <?php if ($bimbingan['status'] == '1') echo "selected"; ?>>Valid</option>
+                                <option value="2" <?php if ($bimbingan['status'] == '2') echo "selected"; ?>>Tidak Valid</option>
                             </select>
                         </div>
                     </div>

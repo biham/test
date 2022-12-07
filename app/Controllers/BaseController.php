@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\BImbinganModel;
+use App\Models\DetailBimbinganModel;
 use App\Models\DosenModel;
 use App\Models\Jabatan;
 use App\Models\Modeldosen;
@@ -62,8 +63,9 @@ abstract class BaseController extends Controller
         $this->prodi = new Prodi;
         $this->dsn = new Modeldosen;
         $this->jbt = new Jabatan;
-        $this->proposalModel = new ProposalModel();
-        $this->BImbinganModel = new BImbinganModel();
-        $this->users = new UsersModel;
+        $this->ProposalModel = new ProposalModel();
+        $this->BimbinganModel = new BimbinganModel();
+        $this->DetailBimbinganModel = new DetailBimbinganModel();
+        $this->UsersModel = new UsersModel;
     }
 }

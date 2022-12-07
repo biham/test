@@ -33,13 +33,13 @@ class ProposalModel extends Model
         $row = $query->getRow();
         return $row;
     }
-    public function proposal($id)
+    public function proposal($idl)
     {
         $builder = $this->db->table('proposal');
         $builder->select('*');
         $builder->join('mahasiswa', 'mahasiswa.id = proposal.id_mahasiswa');
         $builder->join('dosen', 'dosen.id = proposal.id_dosen', 'left');
-        $row = $builder->getwhere(['id_mahasiswa' => $id]);
+        $row = $builder->getwhere(['id_mahasiswa' => $idl]);
         $rows = $row->getRowArray();
         return $rows;
     }

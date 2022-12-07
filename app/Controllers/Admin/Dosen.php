@@ -116,9 +116,9 @@ class Dosen extends BaseController
                     'password' => password_hash($this->request->getVar('nip'), PASSWORD_DEFAULT),
                     'userlevelid' => 3
                 ];
-                $this->users->insert($simpanuser);
+                $this->UsersModel->insert($simpanuser);
 
-                $id = $this->users->getInsertID();
+                $id = $this->UsersModel->getInsertID();
                 $simpandata = [
                     'id' => $id,
                     'nip' => $this->request->getVar('nip'),

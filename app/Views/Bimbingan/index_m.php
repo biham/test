@@ -51,83 +51,6 @@
     function listdatabimbingan() {
         $(document).ready(function() {
             table = $('#bimbingan').DataTable({
-                dom: 'Bfrtip',
-                buttons: [{
-                    extend: 'pdfHtml5',
-                    orientation: 'potrait',
-                    pageSize: 'A4',
-                    title: 'TIC TICKET REPORT',
-                    blank: 'yes',
-                    download: 'open',
-                    exportOptions: {
-                        // content: [
-                        //     'Bulleted list example:',
-                        //     {
-                        //         // to treat a paragraph as a bulleted list, set an array of items under the ul key
-                        //         ul: [
-                        //             'Item 1',
-                        //             'Item 2',
-                        //             'Item 3',
-                        //             {
-                        //                 text: 'Item 4',
-                        //                 bold: true
-                        //             },
-                        //         ]
-                        //     },
-                        //     {
-                        //         columns: [
-                        //             [0, 1, 2, 3, 5]
-                        //         ]
-                        //     }
-                        // ]
-                    },
-                    customize: function(doc) {
-                        doc.defaultStyle.fontSize = 12; //2, 3, 4,etc //2, 3, 4,etc
-                        doc.defaultStyle.alignment = 'center';
-                        doc.styles.tableHeader.fontSize = 12; //2, 3, 4, etc
-                        // doc.content[1].table.widths = ['5%', '10%', '15%', '15%',
-                        //     '14%', '14%', '14%', '14%'
-                        // ];
-                        // doc.content[1].table = {
-                        //     headerRows: 1,
-                        //     widths: ['10%', 'auto', 'auto', '*'],
-
-                        //     body: [
-                        //         ['First', 'Second', 'Third', 'The last one'],
-                        //     ],
-                        //     columns: [0, 1, 2, 3, 5],
-                        // }
-                        doc = {
-                            content: [
-                                'Bulleted list example:',
-                                {
-                                    // to treat a paragraph as a bulleted list, set an array of items under the ul key
-                                    ul: [
-                                        'Item 1',
-                                        'Item 2',
-                                        'Item 3',
-                                        {
-                                            text: 'Item 4',
-                                            bold: true
-                                        },
-                                    ]
-                                },
-
-                                'Numbered list example:',
-                                {
-                                    // for numbered lists set the ol key
-                                    ol: [
-                                        'Item 1',
-                                        'Item 2',
-                                        'Item 3'
-                                    ]
-                                }
-                            ]
-                        };
-                    }
-
-                }],
-
                 responsive: true,
                 processing: true,
                 serverSide: true,
@@ -152,6 +75,13 @@
                     {
                         "width": "20%",
                         data: 'ket_2',
+                        "render": function(data, type, row) {
+                            if (row.status === '1' && row.ket_2 === null) {
+                                return 'Tidak ada catatan';
+                            } else {
+                                return data;
+                            }
+                        }
 
                     },
                     {

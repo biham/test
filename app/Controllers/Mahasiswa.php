@@ -3,24 +3,27 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Models\proposalModel;
-use App\Models\BImbinganModel;
-use App\models\DetailbimbinganModel;
+use App\Models\ProposalModel;
+use App\Models\BimbinganModel;
+use App\models\DetailBimbinganModel;
 use Hermawan\DataTables\DataTable;
 
 class Mahasiswa extends BaseController
 {
     public function index()
     {
-        $id = $this->session->get('idlogin');
-        $proposal = new proposalModel;
-        $proposaldata = $proposal->proposal($id);
+        $idl = $this->session->get('idlogin');
+        $proposal = new ProposalModel;
+        $bimbingan = new BimbinganModel;
+        $proposaldata = $proposal->proposal($idl);
+        $jmlbimbingan = $bimbingan->getbimbinganvalid($idl);
         if ($proposaldata != null) {
             $data = [
                 $proposaldata,
                 'title' => 'Mahasiswa',
-                // 'judul' => $proposaldata->judul_proposal,
-                // 'dospem' => $proposaldata->nama_dsn,
+                'judul' => $proposaldata['judul'],
+                'dospem' => $proposaldata['nama_dsn'],
+                'jml' => $jmlbimbingan
             ];
             return view('Mahasiswa/index', $data);
         } else {
@@ -31,13 +34,12 @@ class Mahasiswa extends BaseController
             ];
             return view('Mahasiswa/index', $data);
         }
-
-        // dd($proposaldata['id_mahasiswa']);
+        // dd($jmlbimbingan);
     }
     public function getproposal()
     {
         if ($this->request->isAJAX()) {
-            $proposal = new proposalModel();
+            $proposal = new ProposalModel();
             $id = session('idlogin');
             $builder = $this->db->table('proposal')
                 ->select('id_judul, judul, id_mahasiswa, status, id_dosen, nama_mhs, nama_dsn, files, prodinama')
@@ -72,7 +74,7 @@ class Mahasiswa extends BaseController
 
     {
         $id = $this->session->get('idlogin');
-        $proposal = new proposalModel;
+        $proposal = new ProposalModel;
         $proposaldata = $proposal->proposal($id);
         // if ($proposaldata != null) {
         $data = [
@@ -85,7 +87,7 @@ class Mahasiswa extends BaseController
 
     public function bimbingan()
     {
-        $bimbingan = new BImbinganModel();
+        $bimbingan = new BimbinganModel();
         $data = [
             'title' => 'bimbingan proposal',
             'jadwal' => $bimbingan->getbimbingan()
@@ -112,7 +114,7 @@ class Mahasiswa extends BaseController
     {
         if ($this->request->isAJAX()) {
             $id = $this->session->get('idlogin');
-            $proposal = new proposalModel;
+            $proposal = new ProposalModel;
             $proposaldata = $proposal->proposal($id);
             $id_judul = $this->request->getVar('id_judul');
             $file_name = $proposaldata['npm'] . '_' . $proposaldata['nama_mhs'] . '_' . $proposaldata['judul'];
@@ -121,7 +123,7 @@ class Mahasiswa extends BaseController
                 array_map('unlink', glob(FCPATH . "assets/proposal/$file_name.*"));
             }
 
-            $this->proposalModel->delete($id_judul);
+            $this->ProposalModel->delete($id_judul);
             $msg = [
                 'sukses' => "berhasil dihapus"
             ];
@@ -132,7 +134,7 @@ class Mahasiswa extends BaseController
     public function simpandata()
     {
         if ($this->request->isAJAX()) {
-            $proposal = new proposalModel();
+            $proposal = new ProposalModel();
             $builder = $this->db->table('mahasiswa');
             $id = $this->session->get('idlogin');
             $data = $builder->getWhere(['id' => $id])->getRowArray();
@@ -187,7 +189,7 @@ class Mahasiswa extends BaseController
                     'tahunakademikid' => $proposal->gettahunaktif()->TahunAkademikID,
                 ];
 
-                $mhs = new proposalModel();
+                $mhs = new ProposalModel();
                 $mhs->insert($simpandata);
 
                 $msg = [
@@ -206,9 +208,9 @@ class Mahasiswa extends BaseController
         if ($this->request->isAJAX()) {
 
             $id_judul = $this->request->getVar('id_judul');
-            $skr = new proposalModel();
+            $skr = new ProposalModel();
             $data = [
-                'proposal' => $this->proposalModel->find($id_judul),
+                'proposal' => $this->ProposalModel->find($id_judul),
                 'dosen' => $this->dsn->findAll(),
                 'mahasiswa' => $this->mhs->findAll(),
             ];
@@ -272,7 +274,7 @@ class Mahasiswa extends BaseController
 
         if ($this->request->isAJAX()) {
 
-            $bimbingan = new bimbinganModel();
+            $bimbingan = new BimbinganModel();
             $id = $this->request->getVar('id');
 
             $data = [
@@ -326,7 +328,7 @@ class Mahasiswa extends BaseController
                     'id_mhs' => $data['nobp']
                 ];
 
-                $bimbingan = new DetailbimbinganModel();
+                $bimbingan = new DetailBimbinganModel();
                 $bimbingan->insert($simpandata);
 
                 $msg = [

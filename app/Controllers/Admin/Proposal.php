@@ -5,7 +5,7 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\Modeldosen;
 use App\Models\Modelmahasiswa;
-use App\Models\proposalModel;
+use App\Models\ProposalModel;
 use Hermawan\DataTables\DataTable;
 
 class proposal extends BaseController
@@ -93,7 +93,7 @@ class proposal extends BaseController
             ];
 
 
-            $this->proposalModel->insert($simpandata);
+            $this->ProposalModel->insert($simpandata);
 
             $msg = [
                 'sukses' => 'Data dosen berhasil tersimpan'
@@ -111,9 +111,9 @@ class proposal extends BaseController
         if ($this->request->isAJAX()) {
 
             $id = $this->request->getVar('id_judul');
-            $skr = new proposalModel();
+            $skr = new ProposalModel();
             $data = [
-                'proposal' => $this->proposalModel->editproposal($id),
+                'proposal' => $this->ProposalModel->editproposal($id),
                 'dosen' => $this->dsn->findAll(),
                 'mahasiswa' => $this->mhs->findAll(),
             ];
@@ -149,7 +149,7 @@ class proposal extends BaseController
                 'id_dosen' => $this->request->getVar('id_dosen'),
                 // 'status' => $this->request->getVar('status'),
             ];
-            $this->proposalModel->update($nip, $simpandata);
+            $this->ProposalModel->update($nip, $simpandata);
 
             $msg = [
                 'sukses' => 'Data mahasiswa berhasil Update'
@@ -164,7 +164,7 @@ class proposal extends BaseController
     {
         if ($this->request->isAJAX()) {
             $id = $this->session->get('idlogin');
-            $proposal = new proposalModel;
+            $proposal = new ProposalModel;
             $proposaldata = $proposal->proposal($id);
             $id_judul = $this->request->getVar('id_judul');
             // $mhs = new Modelmahasiswa;
@@ -172,7 +172,7 @@ class proposal extends BaseController
             // if (file_exists('assets/images/foto', $proposaldata->id_mahasiswa . '_' . $proposaldata->nama_mhs . '.' . $file->getExtension())) {
             //     unlink('assets/images/foto', $proposaldata->id_mahasiswa . '_' . $proposaldata->nama_mhs . '.' . $file->getExtension());
             // }
-            $this->proposalModel->delete($id);
+            $this->ProposalModel->delete($id);
             $msg = [
                 'sukses' => "berhasil dihapus"
             ];

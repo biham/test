@@ -9,11 +9,7 @@
     <div class="page-title-box">
         <!-- <h4 class="page-title"><?= $title; ?></h4> -->
     </div>
-</div>
-
-<div class="col-sm-12">
     <div class="card m-b-30">
-
         <div class="card-body">
             <div class="card-title text-center">
                 <h5><?= $title; ?></h5>
@@ -28,15 +24,12 @@
 
             </p>
             <!-- <div class="table-responsive"> -->
-            <table class="table table-sm table-striped" id="datadosen">
+            <table class="table table-sm table-striped" id="datatahun">
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th class="text-center">Judul</th>
-                        <th>Download Judul</th>
-                        <th>Nama Mahaiswa</th>
-                        <th>Prodi</th>
-                        <th>status</th>
+                        <th>Username</th>
+                        <th>Userlevel</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -45,17 +38,16 @@
                 </tbody>
             </table>
         </div>
+
+        <div class="viewmodal" style="display: none;"></div>
     </div>
 </div>
-</div>
-<div class="viewmodal" style="display: none;"></div>
-
 
 
 <script>
-    function listdataproposal() {
+    function listusers() {
         $(document).ready(function() {
-            $('#datadosen').DataTable({
+            $('#datatahun').DataTable({
                 // dom: 'Bfrtip',
                 // buttons: [
                 //     'colvis',
@@ -65,53 +57,24 @@
                 processing: true,
                 serverSide: true,
                 responsive: true,
-                ajax: '<?= site_url('dosen/getdataproposal') ?>',
+                ajax: '<?= site_url('admin/users/getdata') ?>',
                 order: [],
                 columns: [{
                         data: 'no',
                         orderable: false
                     },
                     {
-                        "width": "30%",
-                        data: 'judul',
+                        data: 'username',
                     },
                     {
-                        data: 'files',
-                        render: function(data, type) {
-                            if (type === 'display') {
-                                let link = 'files';
-
-                                return '<a href="' + data + '" download>Download</a>';
-                            }
-
-                            return data;
-                        },
-                    },
-                    {
-                        data: 'nama_mhs'
-                    },
-                    {
-                        data: 'prodinama',
-
-                    },
-                    {
-                        data: 'status',
-                        "render": function(data, type, row) {
-                            if (row.status == '1') {
-                                return '<span class="badge badge-primary">di terima</badge>';
-                            } else if (row.status == '2') {
-                                return '<span class="badge badge-warning">di tolak</badge>';
-                            } else {
-                                return '<span class="badge badge-warning">Menunggu Kofirmasi</badge>';
-                            }
-                        }
-
+                        data: 'levelnama',
                     },
                     {
                         data: 'action',
                         orderable: false,
 
                     },
+
 
                 ],
                 "bDestroy": true,
@@ -122,31 +85,76 @@
 
     }
     $(document).ready(function() {
-        listdataproposal();
-        $('.tomboltambah').click(function(e) {
-            e.preventDefault();
-            $.ajax({
-                url: "<?= site_url('admin/proposal/formtambah'); ?>",
-                dataType: "json",
-                success: function(response) {
-                    $('.viewmodal').html(response.data).show();
+        listusers();
 
-                    $('#modaltambah').modal('show');
+        $('.tambahdata').submit(function(e) {
+            e.preventDefault();
+            let form = $('.tambahdata')[0];
+
+            let data = new FormData(form);
+            $.ajax({
+                type: "post",
+                url: "<?= site_url('admin/tahunakademik/simpandata'); ?>",
+                data: $(this).serialize(),
+                dataType: "json",
+                beforeSend: function() {
+                    $('.btnsimpan').attr('disable', 'disabled');
+                    $('.btnsimpan').html('<i class="fa fa-spin fa-spinner"> </i>');
+                },
+                complete: function() {
+                    $('.btnsimpan').removeAttr('disable');
+                    $('.btnsimpan').html('Simpan');
+                },
+                success: function(response) {
+                    if (response.error) {
+                        if (response.error.tahun) {
+                            $('#tahun').addClass('is-invalid');
+                            $('.errortahun').html(response.error.tahun);
+                        } else {
+                            $('#tahun').removeClass('is-invalid');
+                            $('.errortahun').html('');
+                        }
+                        if (response.error.statuss) {
+                            $('#statuss').addClass('is-invalid');
+                            $('.errorstatuss').html(response.error.statuss);
+                        } else {
+                            $('#statuss').removeClass('is-invalid');
+                            $('.errorstatuss').html('');
+                        }
+                        if (response.error.semester) {
+                            $('#semester').addClass('is-invalid');
+                            $('.errorsemester').html(response.error.semester);
+                        } else {
+                            $('#semester').removeClass('is-invalid');
+                            $('.errorsemester').html('');
+                        }
+
+                    } else {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: response.sukses
+                        })
+                        listdatatahun();
+                    }
+
                 },
                 error: function(xhr, ajaxOptions, thrownError) {
                     alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
                 }
+
             });
-        })
+            return false;
+        });
 
     });
 
-    function edit(id_judul) {
+    function edit(TahunAkademikID) {
         $.ajax({
             type: "post",
-            url: "<?= site_url('admin/proposal/formedit'); ?>",
+            url: "<?= site_url('admin/tahunakademik/formedit'); ?>",
             data: {
-                id_judul: id_judul
+                id: TahunAkademikID
             },
             dataType: "json",
             success: function(response) {
@@ -162,10 +170,10 @@
     }
 
 
-    function terima(id_judul) {
+    function hapus(id) {
         Swal.fire({
-            title: 'Yakin?',
-            text: `ingin menerima proposal ini ?`,
+            title: '',
+            text: `ingin menghapus data ?`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -177,9 +185,9 @@
             if (result.isConfirmed) {
                 $.ajax({
                     type: "post",
-                    url: "<?= site_url('dosen/terima'); ?>",
+                    url: "<?= site_url('admin/users/hapus'); ?>",
                     data: {
-                        id_judul: id_judul
+                        id: id
                     },
                     dataType: "json",
                     success: function(response) {
@@ -189,43 +197,7 @@
                                 title: 'Berhasil',
                                 text: response.sukses,
                             });
-                            listdataproposal();
-                        }
-
-                    }
-                });
-            }
-        })
-    }
-
-    function tolak(id_judul) {
-        Swal.fire({
-            title: 'Yakin?',
-            text: `ingin menolak proposal ini ?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya',
-            cancelButtonText: 'Tidak',
-        }).then((result) => {
-
-            if (result.isConfirmed) {
-                $.ajax({
-                    type: "post",
-                    url: "<?= site_url('dosen/tolak'); ?>",
-                    data: {
-                        id_judul: id_judul
-                    },
-                    dataType: "json",
-                    success: function(response) {
-                        if (response.sukses) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil',
-                                text: response.sukses,
-                            });
-                            listdataproposal();
+                            listusers();
                         }
 
                     }

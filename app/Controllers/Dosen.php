@@ -4,13 +4,14 @@ namespace App\Controllers;
 
 use App\Controllers\Admin\proposal;
 use App\Controllers\BaseController;
-use App\Models\BImbinganModel;
+use App\Models\BimbinganModel;
+use App\Models\DetailBimbinganModel;
 use App\Models\proposalModel;
 use Hermawan\DataTables\DataTable;
 
 class Dosen extends BaseController
 {
-    public function getdata()
+    public function getdataproposal()
     {
         $id = session('idlogin');
         $builder = $this->db->table('proposal')
@@ -35,6 +36,63 @@ class Dosen extends BaseController
                     return '
                     <button type="button" class="btn btn-warning btn-sm">sudah di tolak</button>';
                 }
+            }, 'last')
+            ->format('judul_proposal', function ($value) {
+                return strtoupper($value);
+            })
+            ->toJson(true);
+    }
+    public function getdatabimbingan()
+    {
+        $id = session('idlogin');
+        $builder = $this->db->table('bimbingan')
+            ->select('bimbingan.id, bimbingan.id_judul, judul, bimbingan.id_mahasiswa, bimbingan.status, bimbingan.id_dosen, nama_mhs, nama_dsn, files, prodinama')
+            ->where('bimbingan.id_dosen', $id)
+            ->join('proposal', 'proposal.id_judul=bimbingan.id_judul',)
+            ->join('mahasiswa', 'mahasiswa.id=bimbingan.id_mahasiswa',)
+            ->join('dosen', 'dosen.id=bimbingan.id_dosen',)
+            ->join('prodi', 'prodi.prodiid = mahasiswa.mhsprodiid');
+
+
+
+        return DataTable::of($builder)->addNumbering('no')
+            ->add('action', function ($row) {
+
+                return '
+                    <button type="button" class="btn btn-primary btn-sm" onclick="gabung(\'' . $row->id  . '\')">Detail</button>';
+            }, 'last')
+            ->format('judul_proposal', function ($value) {
+                return strtoupper($value);
+            })
+            ->toJson(true);
+    }
+    public function get_detail_bimbingan()
+    {
+
+        $id = $this->request->getVar('id');
+        // $data = array();
+        // $data = $this->DetailBimbinganModel->getdetail()->getResult();
+        $data = [
+            'table' => $this->DetailBimbinganModel->getdetail($id)->getResultArray()
+        ];
+        // $data = $query2;
+        echo json_encode($data);
+    }
+    public function detail_bimbingan()
+    {
+        $id = $this->request->getVar('id');
+
+        $builder = $this->db->table('detail_bimbingan')
+            ->select('detail_bimbingan.id, materi, files, ket, files_2, ket_2, detail_bimbingan.status')
+            ->where('id_bimbingan', $id)
+            ->join('bimbingan', 'bimbingan.id=detail_bimbingan.id_bimbingan',);
+
+
+        return DataTable::of($builder)->addNumbering('no')
+            ->add('action', function ($row) {
+
+                return '
+                    <button type="button" class="btn btn-primary btn-sm" onclick="get_detail_bimbingan(\'' . $row->id  . '\')">Detail</button>';
             }, 'last')
             ->format('judul_proposal', function ($value) {
                 return strtoupper($value);
@@ -85,21 +143,38 @@ class Dosen extends BaseController
 
     public function index()
     {
-        $id = session('iduser');
+        // $id = session('iduser');
+        // $id = 5;
+
         $data = [
-            'title' => 'Data Mahasiswa Terbimbing'
+            'title' => 'Data Mahasiswa Terbimbing',
+
+
         ];
         return view('dosen/index', $data);
-        // dd($id);
+        // dd($data);
     }
 
     public function bimbingan()
+    {
+        // $id = '1';
+        // $bimbingan = $this->BimbinganModel->get();
+        $data =
+            [
+                'title' => 'Jadwal Bimbingan Mahasiswa',
+                // 'data' => $bimbingan['id']
+            ];
+        return view('dosen/bimbingan', $data);
+
+        // dd($bimbingan);
+    }
+    public function bimbingandetail()
     {
         $data =
             [
                 'title' => 'Jadwal Bimbingan Mahasiswa'
             ];
-        return view('dosen/bimbingan', $data);
+        return view('dosen/detail_bimbingan', $data);
     }
 
     public function simpandata()
@@ -112,8 +187,8 @@ class Dosen extends BaseController
                 'id_dosen' => $id,
             ];
 
-            $bimbinganmodel = new BImbinganModel();
-            $bimbinganmodel->insert($simpandata);
+            $DetailBimbinganModel = new DetailBimbinganModel();
+            $DetailBimbinganModel->insert($simpandata);
 
             $msg = [
                 'sukses' => 'Berhasil input tanggal bimbingan'

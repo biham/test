@@ -138,7 +138,7 @@
     function hapus(id) {
         Swal.fire({
             title: 'Hapus?',
-            text: `Yakin menghapus data mahasiswa ini dengan npm ${npm} ?`,
+            text: `Yakin menghapus data mahasiswa ini ?`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
