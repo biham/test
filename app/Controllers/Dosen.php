@@ -70,11 +70,10 @@ class Dosen extends BaseController
     {
 
         $id = $this->request->getVar('id');
+        // $id = 5;
         // $data = array();
         // $data = $this->DetailBimbinganModel->getdetail()->getResult();
-        $data = [
-            'table' => $this->DetailBimbinganModel->getdetail($id)->getResultArray()
-        ];
+        $data =  $this->BimbinganModel->detail_bimbingan($id)->getrow();
         // $data = $query2;
         echo json_encode($data);
     }

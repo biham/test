@@ -37,12 +37,10 @@ class BimbinganModel extends Model
     }
     public function getbimbinganvalid($idl)
     {
-        $where = "id_mahasiswa=$idl and bimbingan.status='1'";
-        $builder = $this->db->table('bimbingan');
+        $where = "id_mahasiswa=$idl and detail_bimbingan.status='1'";
+        $builder = $this->db->table('detail_bimbingan');
         $builder->select('*');
-        $builder->join('proposal', 'proposal.id_judul = bimbingan.id_judul');
-        $builder->join('mahasiswa', 'mahasiswa.id = proposal.id_mahasiswa');
-        $builder->join('dosen', 'dosen.id = proposal.id_dosen');
+        $builder->join('bimbingan', 'bimbingan.id = detail_bimbingan.id_bimbingan');
         $row = $builder->where($where)->countAllResults();
         return $row;
     }
@@ -54,5 +52,27 @@ class BimbinganModel extends Model
         }
 
         return $this->where(['id' => $id])->first();
+    }
+
+    public function bimbingan_mhs($id)
+    {
+        $where = "id_mahasiswa=$id";
+        $builder = $this->db->table('bimbingan');
+        $builder->join('mahasiswa', 'mahasiswa.id = bimbingan.id_mahasiswa');
+        $builder->select('bimbingan.id, nama_mhs, npm');
+        $row = $builder->getWhere($where)->getRowArray();
+        return $row;
+    }
+    public function detail_bimbingan($id)
+    {
+        $where = "bimbingan.id=$id";
+        $builder = $this->db->table('bimbingan');
+        $builder->join('mahasiswa', 'mahasiswa.id = bimbingan.id_mahasiswa');
+        $builder->join('prodi', 'prodi.prodiid = mahasiswa.mhsprodiid');
+        $builder->join('dosen', 'dosen.id = bimbingan.id_dosen');
+        $builder->join('proposal', 'proposal.id_judul = bimbingan.id_judul');
+        $builder->select('bimbingan.id, nama_mhs, npm, nama_dsn, judul, prodinama');
+        $row =  $builder->getWhere($where);
+        return $row;
     }
 }

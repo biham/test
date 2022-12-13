@@ -119,11 +119,8 @@ class Bimbingan extends BaseController
     public function simpandata()
     {
         if ($this->request->isAJAX()) {
-            $proposal = new proposalModel();
-            $builder = $this->db->table('mahasiswa');
             $id = $this->session->get('idlogin');
-            $data1 = $builder->getWhere(['id' => $id])->getRowArray();
-            $data = $proposal->accproposal($id);
+            $data = $this->BimbinganModel->bimbingan_mhs($id);
 
             $validation = \config\Services::validation();
 
@@ -175,7 +172,7 @@ class Bimbingan extends BaseController
                 $file = $this->request->getFile('files');
                 $file->move('assets/bimbingan/', $data['npm'] . '_' . $data['nama_mhs'] . '_' .  $file->getRandomName());
                 $simpandata = [
-                    'id_judul' => $data['id_judul'],
+                    'id_bimbingan' => $data['id'],
                     'materi' => $this->request->getVar('materi'),
                     'ket' => $this->request->getVar('ket'),
                     'files' => $file->getname(),

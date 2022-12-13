@@ -86,7 +86,7 @@
                                     <th>Nama Pembimbing</th>
                                     <th>:</th>
                                     <td>
-                                        <p id="dosen"></p>
+                                        <p id="nama_dsn"></p>
                                     </td>
                                 </tr>
                             </table>
@@ -489,11 +489,15 @@
             success: function(data) {
 
                 $('p#hidden').html(data.hidden);
-                $('#nama_mhs').html(data.table[0].ket);
-                $('p#NIM1').html(data.NIM1);
+                $('#nama_mhs').html(data.nama_mhs);
+                $('#npm').html(data.npm);
+                $('#nama_dsn').html(data.nama_dsn);
+                $('#prodinama').html(data.prodinama);
+                $('#Judul').html(data.judul);
 
 
-                console.log(data.table[0].ket);
+                console.log(data);
+
 
             },
             error: function(xhr, ajaxOptions, thrownError) {
